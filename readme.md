@@ -11,4 +11,4 @@ By clicking the "Connect" button, it analyzes both directories for files and wil
 The sync feature finds all the differences in the folders, and updates in both directions by sending missing files in each direction and overwriting older copies of files with newer copies.
 
 #Watch
-Now that the local and server folders are connected, adding any new files will automatically add to the server, and the same with removing. No syncing required.
+Now that the local and server folders are connected &mdash; adding files, removing files, and renaming files will all take place on both versions. No syncing required.
