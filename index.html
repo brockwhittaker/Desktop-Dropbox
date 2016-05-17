@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Dropbox</title>
+    <link rel="stylesheet" href="public/css/main.css" media="screen" title="no title" charset="utf-8">
+  </head>
+  <body>
+    <div class="fs-group t-center">
+      <div class="file-system-header">Paths</div>
+      <div class="input-box">
+        <label for="directory">Local directory:</label>
+        <input type="text" name="local" value="/Users/brockwhittaker/Desktop/dropbox">
+        <div class="clear-float"></div>
+      </div>
+      <div class="input-box">
+        <label for="directory">Server directory:</label>
+        <input type="text" name="server" value="/Users/brockwhittaker/Desktop/copy">
+        <div class="clear-float"></div>
+      </div>
+    </div>
+
+    <div class="fs-group">
+      <div class="file-system-header">Local<div></div></div>
+      <div class="file-system local"></div>
+    </div>
+
+    <div class="fs-group">
+      <div class="file-system-header">Server<div></div></div>
+      <div class="file-system server"></div>
+    </div>
+
+    <button type="button" name="sync">Sync</button>
+  </body>
+
+  <script src="public/js/tools.js" charset="utf-8"></script>
+  <script src="public/js/FileSystem.js" charset="utf-8"></script>
+  <script src="public/js/dropbox.js" charset="utf-8"></script>
+  <script src="public/js/main.js" charset="utf-8"></script>
+</html>

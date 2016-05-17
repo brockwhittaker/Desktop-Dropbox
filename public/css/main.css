@@ -1,0 +1,135 @@
+* {
+  font-family: Lato;
+  color: #444;
+}
+
+.fs-group {
+  width: 80%;
+
+  margin: 20px auto;
+
+  border: 5px solid #eee;
+}
+
+.file-system-header {
+  position: relative;
+
+  margin: 0 auto;
+  padding: 0px 10px 5px 0px;
+
+  text-align: left;
+
+  font-size: 1.5em;
+  font-weight: 300;
+
+  border: 5px solid #eee;
+  background-color: #eee;
+}
+
+.file-system {
+  position: relative;
+
+  width: 90%;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.file-system-header .uptodate {
+  position: absolute;
+  right: 0px;
+  top: -0px;
+  padding: 3px;
+
+  font-size: 0.5em;
+
+  color: #fff;
+  background-color: rgb(107, 200, 147);
+
+  border-radius: 3px;
+}
+
+.uptodate.not {
+  background-color: rgb(200, 107, 107);
+}
+
+.file-system .file-item {
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.file-system .file-item:hover {
+  background-color: #fafafa;
+}
+
+.file-system .file-item .name {
+  float: left;
+}
+
+.file-system .file-item .size {
+  color: #888;
+  float: right;
+}
+
+.file-system .file-item {
+  padding: 10px 0px;
+
+  border-bottom: 1px solid #eee;
+}
+
+.clear-float {
+  clear: both;
+}
+
+.input-box label {
+  width: 120px;
+
+  float: left;
+  padding: 10px 10px;
+  margin: 10px 0px;
+
+  color: #fff;
+  background-color: rgb(107, 200, 147);
+}
+
+.input-box {
+  display: inline-block;
+}
+
+.input-box input[type=text] {
+  float: left;
+
+  width: 350px;
+  padding: 10px 10px;
+  margin: 10px 0px;
+
+  font-size: 1em;
+
+  background-color: #eee;
+
+  border: none;
+  outline: none;
+}
+
+button[name=sync] {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 30px;
+
+  font-size: 1em;
+  color: #fff;
+
+  background-color: rgb(107, 200, 147);
+
+  border: none;
+  border-radius: 4px;
+
+  outline: none;
+}
+
+button[name=sync]:active {
+  background-color: rgb(98, 171, 129);
+}
+
+.t-center {
+  text-align: center;
+}
