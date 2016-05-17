@@ -70,6 +70,12 @@
   float: right;
 }
 
+.file-system .file-item .percent {
+  float: left;
+  margin-left: 20px;
+  color: rgb(107, 200, 147);
+}
+
 .file-system .file-item {
   padding: 10px 0px;
 

@@ -14,7 +14,7 @@ var $ = (function () {
     nodes: function ($sel) {
       if (typeof $sel == "string") {
         return document.querySelectorAll($sel);
-      } else if (Array.isArray($sel)) {
+      } else if (Array.isArray($sel) || $sel.length > 0) {
         return $sel;
       } else if (typeof $sel == "object" && $sel.nodeType) {
         return [$sel];

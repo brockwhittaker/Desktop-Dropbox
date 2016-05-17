@@ -8,8 +8,6 @@ var Dropbox = (() => {
     readDirectory: (parent_callback) => {
       storage = defaultStorage();
 
-      console.log(storage);
-
       var readLocal = (callback) => {
         utils.file.directory(storage.local.dir, (data) => {
           storage.local.files = data;
@@ -17,15 +15,11 @@ var Dropbox = (() => {
         });
       };
 
-      var readServer = (callback) => {
-        utils.file.directory(storage.server.dir, (data) => {
-          storage.server.files = data;
-          callback();
-        });
-      };
+      /* we don't need to read the files from the server. Both this and the info
+         are done in the next step. */
 
       async.parallel(
-        [readLocal, readServer],
+        [readLocal],
         parent_callback
       );
     },
@@ -48,16 +42,12 @@ var Dropbox = (() => {
       var fileInfoServer = (callback) => {
         let counter = 0;
 
-        storage.server.files.forEach((o) => {
-          fs.stat(utils.strops.toFullServer(o), (err, data) => {
-            storage.server.info[o] = data;
+        upload.fileInformation(null, function (data) {
+          storage.server.files = Object.keys(data);
+          storage.server.info = data;
 
-            counter++;
-            if (counter == storage.server.files.length) callback();
-          });
+          callback();
         });
-
-        if (storage.server.files.length === 0) callback();
       };
 
       async.parallel(
@@ -78,7 +68,6 @@ var Dropbox = (() => {
         if (!storage.server.info[x] ||
             (local.ctime > server.ctime && server.size !== local.size)) {
           pv[x] = {source: "local", path: x};
-          console.log(x, "local");
         }
       }
 
@@ -89,7 +78,6 @@ var Dropbox = (() => {
         if (!storage.local.info[x] ||
             (server.ctime > local.ctime && server.size !== local.size)) {
           pv[x] = {source: "server", path: x};
-          console.log(x, "server");
         }
       }
 
@@ -106,13 +94,49 @@ var Dropbox = (() => {
         var counter = 0,
             total = pv.length;
 
+        // if a file is on step one, create the file...
+        var fileInit = (response) => {
+          utils.UI.drawElemFromLocal(response.data.name, $(".file-system.server"));
+        };
+
+        // if it is another step (block) uploaded from file...
+        var fileStep = (response) => {
+          let hash = crypto.createHash('md5').update(response.data.name).digest('hex');
+
+          $(`[name=h-${hash}]`)
+            .find("div.percent")
+            .html((response.data.percent * 100).toFixed(0) + "%");
+        };
+
+        // if the file has finished uploading...
+        var fileFinished = (response) => {
+          let hash = crypto.createHash('md5').update(response.data.name).digest('hex'),
+              $percent = $(`[name=h-${hash}]`);
+
+          $percent
+            .find("div.percent")
+            .html("100%");
+
+          setTimeout(function () {
+            $percent.remove();
+          }, 500);
+        };
+
         pv.forEach((file) => {
-          utils.file.copy(
+          utils.file.sendToServer(
             utils.strops.toFullLocal(file.path),
-            utils.strops.toFullServer(file.path),
-            () => {
-              if (++counter == total) callback();
-            });
+            file.path,
+            (response) => {
+              if (response.data.piece === 0) fileInit(response);
+
+              if (response.finished) {
+                fileFinished(response);
+                if (++counter == total) callback();
+              } else {
+                fileStep(response);
+              }
+            }
+          );
         });
 
         if (pv.length === 0) callback();
@@ -298,6 +322,18 @@ var Dropbox = (() => {
         rd.pipe(wr);
       },
 
+      sendToServer: function (path, name, callback) {
+        fs.readFile(path, function (err, data) {
+          data = new Buffer(data).toString('base64');
+
+          console.log(data.substr(0, 100));
+
+          upload.uploadFile(data, name, {}, (response, finished) => {
+            callback(response, finished);
+          });
+        });
+      },
+
       directory: (path, callback) => {
         fs.readdir(path, (err, data) => {
           callback(utils.filter.hiddenFiles(data || []));
@@ -341,19 +377,6 @@ var Dropbox = (() => {
             utils.index.operate(callback.bind(null, "local", event, path));
           }
         });
-
-        chokidar.watch(storage.server.dir, {ignored: /[\/\\]\./}).on("all", (event, path) => {
-          path = utils.strops.toServer(path);
-
-          if (event == "add" && storage.server.files.indexOf(path) == -1) {
-            storage.index.server.add.push(path);
-            utils.index.operate(callback.bind(null, "server", event, path));
-          } else if (event == "unlink") {
-            storage.index.server.delete.push(path);
-            console.log(event, path);
-            utils.index.operate(callback.bind(null, "server", event, path));
-          }
-        });
       },
 
       write: (path, data, callback) => {
@@ -380,6 +403,7 @@ var Dropbox = (() => {
 
         for (let x in arr) {
           let size = (arr[x].size / Math.pow(1024, 2)).toFixed(2);
+
           let item = $.create(`<div class='file-item'>
             <div class='name'>${x}</div>
             <div class='size'>${size}MB</div>
@@ -387,6 +411,20 @@ var Dropbox = (() => {
           </div>`);
           $container.append(item);
         }
+      },
+      drawElemFromLocal: (name, $container) => {
+        let size = (storage.local.info[name].size / Math.pow(1024, 2)).toFixed(2),
+            hash = crypto.createHash('md5').update(name).digest('hex');
+
+        // prefix with h- because name attr can't start w/ number
+        let item = $.create(`<div class='file-item' name='h-${hash}'>
+          <div class='name'>${name}</div>
+          <div class='size'>${size}MB</div>
+          <div class='percent'>0%</div>
+          <div class='clear-float'></div>
+        </div>`);
+
+        $container.append(item);
       }
     },
     strops: {
@@ -493,27 +531,7 @@ var Dropbox = (() => {
 })();
 
 /*
-1. Delete across both. Currently if you delete from one it'll just resync from the other.
-2. Two == named files should be converted to (2).
 3. Merge conflicts with same file updates. Keep local, server, or both?
 4. Uploading graphics. Currently it happens so fast it doesn't matter (since it's local), but on the web I'll want to track progress and show it.
 5. Option to sync only a particular file at a given time if internet is slow or if you don't want to sync ALL files.
-*/
-
-/*
-1. Delete across both.
-  - This means deleting a file wherever we find it. A user could have two local and one server,
-    all with a copy of the file. If this algorithm is hungry to keep replacing the file, it won't
-    work.
-  - Read the ctime, name, and size. If same file, delete off all versions. If the file is added
-    back however, delete it from the removal index.
-
-2. Rename across both.
-  - Use the index as well. In the index.rename array, rename all these files.
-
-  - IF FILE EXISTS: Simple rename.
-  - IF FILE DOESN'T EXIST:
-    - Download file, then simple rename.
-    - OR don't do anything. As far as local is concerned, that file doesn't exist
-      so any copy will be fresh.
 */
