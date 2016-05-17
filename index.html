@@ -6,16 +6,21 @@
     <link rel="stylesheet" href="public/css/main.css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
+    <div class="fs-group no-border">
+      <button type="button" name="connect">Connect</button>
+      <button type="button" name="sync">Sync</button>
+    </div>
+
     <div class="fs-group t-center">
       <div class="file-system-header">Paths</div>
       <div class="input-box">
         <label for="directory">Local directory:</label>
-        <input type="text" name="local" value="/Users/brockwhittaker/Desktop/dropbox">
+        <input type="text" name="local" value="dropbox/local">
         <div class="clear-float"></div>
       </div>
       <div class="input-box">
         <label for="directory">Server directory:</label>
-        <input type="text" name="server" value="/Users/brockwhittaker/Desktop/copy">
+        <input type="text" name="server" value="dropbox/server">
         <div class="clear-float"></div>
       </div>
     </div>
@@ -29,8 +34,6 @@
       <div class="file-system-header">Server<div></div></div>
       <div class="file-system server"></div>
     </div>
-
-    <button type="button" name="sync">Sync</button>
   </body>
 
   <script src="public/js/tools.js" charset="utf-8"></script>

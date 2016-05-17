@@ -110,8 +110,8 @@
   outline: none;
 }
 
-button[name=sync] {
-  display: block;
+button {
+  display: inline-block;
   margin: 0 auto;
   padding: 10px 30px;
 
@@ -124,12 +124,22 @@ button[name=sync] {
   border-radius: 4px;
 
   outline: none;
+
+  transition: all 0.1s ease;
 }
 
-button[name=sync]:active {
+button:active {
   background-color: rgb(98, 171, 129);
+}
+
+button.disabled {
+  background-color: #AAA;
 }
 
 .t-center {
   text-align: center;
+}
+
+.no-border {
+  border: none;
 }

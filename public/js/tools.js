@@ -320,6 +320,13 @@ var $ = (function () {
 
         return this;
       },
+      disable: function () {
+        this.each(function () {
+          this.disabled = true;
+        });
+
+        return this;
+      },
       each: function (callback) {
         _utils.each($nodes, callback);
 
@@ -343,6 +350,13 @@ var $ = (function () {
       },
       empty: function () {
         return $nodes.length === 0;
+      },
+      enable: function () {
+        this.each(function () {
+          this.disabled = false;
+        });
+
+        return this;
       },
       find: function ($inner_sel) {
         var parents = this;
