@@ -12,3 +12,6 @@ The sync feature finds all the differences in the folders, and updates in both d
 
 #Watch
 Now that the local and server folders are connected &mdash; adding files, removing files, and renaming files will all take place on both versions. No syncing required.
+
+#Demo Image
+![Demo Image](https://github.com/brockwhittaker/Desktop-Dropbox/dropbox/demo_screenshot.png)
